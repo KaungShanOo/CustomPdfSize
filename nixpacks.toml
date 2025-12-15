@@ -1,9 +1,0 @@
-[phases.setup]
-aptPkgs = ["ghostscript"]
-nixPkgs = ["ghostscript"]
-
-[phases.install]
-cmds = ["pip install -r requirements.txt"]
-
-[start]
-cmd = "python app.py"

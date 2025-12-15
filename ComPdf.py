@@ -1,36 +1,36 @@
-import subprocess
 import os
 import shutil
+from PyPDF2 import PdfReader, PdfWriter
+from io import BytesIO
 
 def process_pdf(input_pdf, size_mb, output_pdf):
-    compressed_pdf = 'compressed.pdf'
     target_size = size_mb * 1024 * 1024
 
     def get_size(path):
         return os.path.getsize(path)
 
     def compress_pdf(input_path, output_path):
-        # Try multiple possible ghostscript paths
-        gs_commands = ['gs', '/usr/bin/gs', '/usr/local/bin/gs', 'ghostscript']
-        gs_path = 'gs'
-        
-        # Find available gs command
-        for cmd in gs_commands:
-            try:
-                subprocess.run([cmd, '--version'], capture_output=True, check=True)
-                gs_path = cmd
-                break
-            except (subprocess.CalledProcessError, FileNotFoundError):
-                continue
-        
-        subprocess.run([
-            gs_path, '-sDEVICE=pdfwrite',
-            '-dCompatibilityLevel=1.4',
-            '-dPDFSETTINGS=/screen',
-            '-dNOPAUSE', '-dQUIET', '-dBATCH',
-            f'-sOutputFile={output_path}',
-            input_path
-        ], check=True)
+        """Compress PDF by removing unnecessary elements"""
+        try:
+            reader = PdfReader(input_path)
+            writer = PdfWriter()
+            
+            # Copy all pages with compression
+            for page in reader.pages:
+                page.compress_content_streams()
+                writer.add_page(page)
+            
+            # Remove metadata to save space
+            writer.add_metadata({})
+            
+            # Write compressed PDF
+            with open(output_path, 'wb') as output_file:
+                writer.write(output_file)
+                
+        except Exception as e:
+            # If compression fails, just copy the file
+            print(f"Compression warning: {e}")
+            shutil.copy(input_path, output_path)
 
     def pad_to_target(path, target_bytes):
         with open(path, 'rb') as f:
@@ -81,6 +81,7 @@ def process_pdf(input_pdf, size_mb, output_pdf):
 
     # Step 1: compress
     print('🔧 Compressing...')
+    compressed_pdf = 'compressed.pdf'
     compress_pdf(input_pdf, compressed_pdf)
     print(f'   Compressed size: {get_size(compressed_pdf) / (1024*1024):.2f} MB')
 
