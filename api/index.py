@@ -5,7 +5,10 @@ from werkzeug.utils import secure_filename
 from ComPdf import process_pdf
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
+
+# Use /tmp for Vercel serverless
+UPLOAD_FOLDER = '/tmp'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100 MB limit
 
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -29,10 +32,10 @@ def upload_file():
             filename = secure_filename(file.filename)
             input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(input_path)
-            
+
             output_filename = f'processed_{filename}'
             output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
-            
+
             try:
                 process_pdf(input_path, size_mb, output_path)
                 return render_template('result.html', filename=output_filename)
@@ -48,6 +51,23 @@ def download_file(filename):
     else:
         return 'File not found', 404
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+# Vercel handler
+def handler(event, context):
+    from werkzeug.wrappers import Request
+    from werkzeug.wsgi import make_environ
+
+    # Convert Vercel event to WSGI environ
+    environ = make_environ(event, context)
+    request = Request(environ)
+
+    # Process the request through Flask
+    with app.request_context(environ):
+        response = app.full_dispatch_request()
+        return {
+            'statusCode': response.status_code,
+            'headers': dict(response.headers),
+            'body': response.get_data(as_text=True)
+        }
+
+# Export the app for Vercel
+application = app

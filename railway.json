@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "python",
+    "buildCommand": "apt-get update && apt-get install -y ghostscript"
+  },
+  "deploy": {
+    "startCommand": "python app.py"
+  }
+}
