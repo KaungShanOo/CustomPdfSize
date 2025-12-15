@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Ready - PDF Processor</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/svg+xml" href="/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -167,6 +169,51 @@
                 font-size: 60px;
             }
         }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer-content strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            margin-top: 8px;
+        }
+
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        body {
+            padding-bottom: 80px;
+        }
     </style>
 </head>
 <body>
@@ -190,5 +237,14 @@
             🔄 Process Another PDF
         </a>
     </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>💻 Developed by <strong>Kylian</strong> | © 2025</p>
+            <div class="footer-links">
+                <span>Powered by Flask & Ghostscript</span>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

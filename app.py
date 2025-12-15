@@ -48,6 +48,24 @@ def download_file(filename):
     else:
         return 'File not found', 404
 
+@app.route('/favicon.ico')
+@app.route('/favicon.svg')
+def favicon():
+    from flask import send_from_directory, make_response
+    try:
+        response = send_from_directory(
+            os.path.join(app.root_path, 'static'),
+            'favicon.svg',
+            mimetype='image/svg+xml'
+        )
+        response.headers['Cache-Control'] = 'public, max-age=43200'
+        return response
+    except:
+        # Fallback inline SVG if file not found
+        from flask import Response
+        svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#667eea"/><path d="M8 6h10l6 6v14a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2z" fill="white"/><path d="M18 6v6h6" fill="none" stroke="#667eea" stroke-width="1.5"/><text x="16" y="20" font-family="Arial" font-size="9" font-weight="bold" fill="#667eea" text-anchor="middle">PDF</text></svg>'''
+        return Response(svg, mimetype='image/svg+xml')
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=port, debug=False)

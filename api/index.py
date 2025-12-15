@@ -51,6 +51,18 @@ def download_file(filename):
     else:
         return 'File not found', 404
 
+@app.route('/favicon.ico')
+def favicon():
+    from flask import Response
+    # Simple SVG favicon for PDF processing
+    svg_favicon = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<rect width="32" height="32" rx="4" fill="#667eea"/>
+<path d="M8 6h10l6 6v14a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2z" fill="white"/>
+<path d="M18 6v6h6" fill="none" stroke="#667eea" stroke-width="1"/>
+<text x="16" y="19" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#667eea" text-anchor="middle">P</text>
+</svg>'''
+    return Response(svg_favicon, mimetype='image/svg+xml')
+
 # Vercel handler
 def handler(event, context):
     from werkzeug.wrappers import Request
