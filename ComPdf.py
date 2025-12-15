@@ -10,8 +10,21 @@ def process_pdf(input_pdf, size_mb, output_pdf):
         return os.path.getsize(path)
 
     def compress_pdf(input_path, output_path):
+        # Try multiple possible ghostscript paths
+        gs_commands = ['gs', '/usr/bin/gs', '/usr/local/bin/gs', 'ghostscript']
+        gs_path = 'gs'
+        
+        # Find available gs command
+        for cmd in gs_commands:
+            try:
+                subprocess.run([cmd, '--version'], capture_output=True, check=True)
+                gs_path = cmd
+                break
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
         subprocess.run([
-            'gs', '-sDEVICE=pdfwrite',
+            gs_path, '-sDEVICE=pdfwrite',
             '-dCompatibilityLevel=1.4',
             '-dPDFSETTINGS=/screen',
             '-dNOPAUSE', '-dQUIET', '-dBATCH',
